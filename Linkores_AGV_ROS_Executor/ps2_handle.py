@@ -95,11 +95,12 @@ def ps_control(forkspeed=0):
         motion_mode_count += 1
         if motion_mode_count == 20:
             handle_mode = not handle_mode
+            print("手自动切换",handle_mode)
     else:
         motion_mode_count = 0
-    if not handle_mode:
-        wheel_angle = -wheel_angle
-        speed = -speed
+    # if not handle_mode:
+        # wheel_angle = -wheel_angle
+        # speed = -speed
     return speed, wheel_angle, forkspeed
 
 

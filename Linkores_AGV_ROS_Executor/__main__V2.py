@@ -204,6 +204,35 @@ def point_travel_thread():
         straight_last_point = temp_p
         time.sleep(0.01)
 
+# Tray identification
+first_flag = True
+mpc_path = None
+def tray_identification(x,y,phi,):
+    global first_flag, mpc_path
+    # beeline = -1.5
+    config.adjust_distance = 0
+    print("endPosition----->", x,",",y,",",phi/math.pi*180)
+    if first_flag:
+        x0 = x
+        y0 = y
+        # phi0 = phi/math.pi*180 +5
+        first_flag = False
+        tray_position = tof_camera_data.rcv_tof
+        tray_position = [10.6442 , 3.3032 , -8.5256, 0]
+        dx = tray_position[0] - x0
+        dy = tray_position[1] - y0
+        phi0 = tray_position[2]
+        beeline = - (math.sqrt(dx*dx + dy*dy))
+
+        if abs(beeline) > 0.001:
+            mpc_path = "100," + format(x0, ".4f") + "," + format(y0, ".4f") + "," + format(phi0, ".4f") + "," + format(beeline, ".4f") +  ",0.0, 0.0, 0.2, 6666, 6, 6," + format(config.adjust_distance, ".4f")
+        else:
+            logger.info("Tray position is error")
+            print("Tray position is error")
+            return None
+    else:
+        return mpc_path
+
 # scheduler_protocol.targetForkHeight = 0.08
 def agv_control_thread():
     global mpc_tcp_init_ok
@@ -427,6 +456,7 @@ def agv_control_thread():
                 logger.info("求解控制量：{}，{}".format(speed, wheel_angle))
 
             #MPC 控制
+            adjustDistance = 0.1
             if float(adjustDistance) != 0:
                 t=time.time()
                 if not mpc_tcp_init_ok:
@@ -438,12 +468,19 @@ def agv_control_thread():
                     screen_ctrl.screenmsg_item_safe_rm("mpc_not_connected")
                     mpc_speed = 0
                     mpc_wheel_angle = 0
-                    send_data = format(x, ".4f") + "," + format(y, ".4f") + "," + format(phi, ".4f") + "," + format(Rcv_speed, ".4f") +  "," + format(Rcv_angle, ".4f")  +"," + parsePath  # + "," + "1.0,0.02,1.0"
+                    # Tray identification
+                    tray_path = tray_identification(x,y,phi)
+                    # print("tray_path", tray_path)
+                    if tray_path != None:
+                        parsePath = tray_path
+
+                    send_data = format(x, ".4f") + "," + format(y, ".4f") + "," + format(phi, ".4f") + "," + format(Rcv_speed, ".4f") + "," + format(Rcv_angle, ".4f") + "," + parsePath  # + "," + "1.0,0.02,1.0"
                     # 接收服务器发送的数据
                     try:
                         mpc_tcp_socket.send(send_data.encode("utf-8"))
                         recv_data = mpc_tcp_socket.recv(1024).decode("utf-8")
                         logger.info("mpc send_data[]: {}".format(send_data))
+                        print("mpc send_data[]: {}".format(send_data))
                     except:
                         mpc_tcp_init_ok = False
                         recv_data = None
@@ -462,6 +499,8 @@ def agv_control_thread():
 
                             screen_ctrl.screenmsg_infopage_od["MPC_info:"] = ("{:.0f}#{:.0f}#{}".format(recv_data[5], recv_data[2], mpc_speed))
                             if int(recv_data[5]) == 101:
+                                print("*********************************************************************************************************************************************")
+                                print("*********************************************************************************************************************************************")
                                 mpc_speed = 0
                                 scheduler_protocol.adjustDistance = 0
                                 point_one = arrive_and_del_point(point_one, point_two, pathPart)
@@ -480,7 +519,7 @@ def agv_control_thread():
                         speed = mpc_speed
                         wheel_angle = mpc_wheel_angle
                         logger.info("mpc, speed:{}, angle:{}".format(speed, wheel_angle))
-                        print("mpc, remain_path:{}, speed:{}, angle:{}".format(remain_path_len, speed, wheel_angle))
+                        print("mpc, remain_path:{}, speed:{}, angle:{}".format(remain_path_len, speed, wheel_angle),int(recv_data[5]))
                         #print("mpc_time",round(time.time()-t,4),time.time())
             else:
                 timestamp = time.time()
@@ -786,6 +825,7 @@ def agv_control_thread():
 
             # 手动控制
             # if not IO_controller.get_automode():
+            ps2_handle.ps_control()
             if not control_mode_switch:
                 AudioPlayer.player.del_audio("转弯")
                 AudioPlayer.player.del_audio("前进")
@@ -874,6 +914,7 @@ def recv_can_thread():
     calculation_angle = lambda x: x if x < (1 << 31) else (x & ((1 << 32) - 1)) - (1 << 32)
     calculation_speed = lambda x: x if x < (1 << 15) else (x & ((1 << 16) - 1)) - (1 << 16)
     _revSpeed2Speed = lambda x: x * (1 / 36.04) * 0.23 * math.pi / 60
+    bytearray_to_hex = lambda can_msg: ' '.join(hex(x) for x in can_msg)
 
     this_thread_name = "recv_can_thread"
     t_check.add_thread(this_thread_name)
@@ -971,12 +1012,13 @@ def recv_can_thread():
                 BMS_max_monomer_voltage = ((can_msg_data[0] << 8) + can_msg_data[1]) / 1000
 
             # TOF 报文
-            elif can_msg_id == 0x205:
-                print("TOF -->0x205: {}".format(can_msg_data))
-                tof_camera_data.rcv_tof[0] = can_msg_data[1] << 8 | can_msg_data[0]
-                tof_camera_data.rcv_tof[1] = can_msg_data[3] << 8 | can_msg_data[2]
-                tof_camera_data.rcv_tof[2] = can_msg_data[5] << 8 | can_msg_data[4]
-                tof_camera_data.rcv_tof[3] = can_msg_data[7] << 8 | can_msg_data[6]
+            elif can_msg_id == 0x185:
+                print("TIME:", time.time(), "TOF -->0x185: [{}]".format(bytearray_to_hex(can_msg_data)))
+                tof_camera_data.rcv_tof[0] = calculation_speed(can_msg_data[1] << 8 | can_msg_data[0])
+                tof_camera_data.rcv_tof[1] = calculation_speed(can_msg_data[3] << 8 | can_msg_data[2])
+                tof_camera_data.rcv_tof[2] = calculation_speed(can_msg_data[5] << 8 | can_msg_data[4])
+                tof_camera_data.rcv_tof[3] = calculation_speed(can_msg_data[7] << 8 | can_msg_data[6])
+
 
             elif can_msg_id == 0x705:
                 tof_camera_data.tof_enable = 200

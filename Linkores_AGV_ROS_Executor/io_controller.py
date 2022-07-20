@@ -1,5 +1,5 @@
 import wiringpi
-
+import ps2_handle
 class IO_Controller():
     # 初始化I\O扩展模块
     def __init__(self):
@@ -83,7 +83,9 @@ class IO_Controller():
 
     # 手自动模式
     def get_automode(self):
-        return wiringpi.digitalRead(79)
+        # return wiringpi.digitalRead(79)
+        # print("手自动切换#########",ps2_handle.handle_mode)
+        return ps2_handle.handle_mode
 
     # 所有安全雷达的控制口都接到了这四个口
     def set_radar_mode(self, radar_mode):
