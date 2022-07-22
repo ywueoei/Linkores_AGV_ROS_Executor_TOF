@@ -11,6 +11,8 @@ ps2_key = [0] * 9
 handle = 0
 ps2_exists = 0
 handle_mode = 0
+handle_auto_mode = 0
+handle_auto_mode_flag = False
 motion_mode_count = 0
 
 if handle_fd == -1:
@@ -69,7 +71,7 @@ else:
 
 
 def ps_control(forkspeed=0):
-    global handle_mode, motion_mode_count
+    global handle_mode, motion_mode_count, handle_auto_mode, handle_auto_mode_flag
     speed_mode = ps2_key[0]
     angle_mode = ps2_key[1]
     motion_mode = ps2_key[2]
@@ -95,12 +97,18 @@ def ps_control(forkspeed=0):
         motion_mode_count += 1
         if motion_mode_count == 20:
             handle_mode = not handle_mode
-            print("手自动切换",handle_mode)
+
+        if motion_mode_count == 60:
+            handle_auto_mode_flag = True
+            handle_mode = not handle_mode
+            handle_auto_mode = not handle_auto_mode
+            print("手自动切换", handle_mode)
+
     else:
         motion_mode_count = 0
-    # if not handle_mode:
-        # wheel_angle = -wheel_angle
-        # speed = -speed
+    if not handle_mode:
+        wheel_angle = -wheel_angle
+        speed = -speed
     return speed, wheel_angle, forkspeed
 
 

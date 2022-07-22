@@ -24,6 +24,7 @@ from fork_controller import fork_control
 from thread_check import t_check
 import ps2_handle
 from tof_camera import tof_camera_data
+from tray_identification import tray_recognition
 
 def get_ip_list():
     ip_str = os.popen("hostname -I").read()
@@ -204,39 +205,6 @@ def point_travel_thread():
         straight_last_point = temp_p
         time.sleep(0.01)
 
-# Tray identification
-first_flag = True
-mpc_path = None
-def tray_identification(x,y,phi,):
-    global first_flag, mpc_path
-    beeline_set = 2 + 1.5
-    config.adjust_distance = 0.7
-    print("endPosition----->", x,",",y,",",phi/math.pi*180)
-    if first_flag:
-        x0 = x
-        y0 = y
-        # phi0 = phi/math.pi*180 +5
-        first_flag = False
-        # tray_position = tof_camera_data.rcv_tof
-        # tray_position = [11.4587 , 2.936 , -9.087, 0]
-        tray_position = [x0 , y0 , round(phi/math.pi*180,4), 0]
-        dx = tray_position[0] - x0
-        dy = tray_position[1] - y0
-        phi0 = tray_position[2]
-        beeline = - (math.sqrt(dx**2 + dy**2))
-
-        x_initial = tray_position[0] + beeline_set * math.cos(phi0/180*math.pi)
-        y_initial = tray_position[1] + beeline_set * math.sin(phi0/180*math.pi)
-        print("startPosition----->", x_initial, ",", y_initial, ",", phi0, tray_position)
-
-        if abs(beeline_set) > 0.001:
-            mpc_path = "100," + format(x_initial, ".4f") + "," + format(y_initial, ".4f") + "," + format(phi0, ".4f") + "," + format(-(beeline_set-1.5), ".4f") +  ",0.0, 0.0, 0.2, 6666, 6, 6, -1.5,0.0, 0.0, 0.2, 7777, 7, 7," + format(config.adjust_distance, ".4f")
-        else:
-            logger.info("Tray position is error")
-            print("Tray position is error")
-            return None
-    else:
-        return mpc_path
 
 # scheduler_protocol.targetForkHeight = 0.08
 def agv_control_thread():
@@ -474,7 +442,7 @@ def agv_control_thread():
                     mpc_speed = 0
                     mpc_wheel_angle = 0
                     # Tray identification
-                    tray_path = tray_identification(x,y,phi)
+                    tray_path = tray_recognition.tray_identification(x, y, phi, tof_camera_data.rcv_tof)
                     # print("tray_path", tray_path)
                     if tray_path != None:
                         parsePath = tray_path

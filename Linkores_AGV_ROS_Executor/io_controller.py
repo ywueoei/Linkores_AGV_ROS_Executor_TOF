@@ -85,7 +85,10 @@ class IO_Controller():
     def get_automode(self):
         # return wiringpi.digitalRead(79)
         # print("手自动切换#########",ps2_handle.handle_mode)
-        return ps2_handle.handle_mode
+        if ps2_handle.handle_auto_mode_flag:
+            return ps2_handle.handle_auto_mode
+        else:
+            return wiringpi.digitalRead(79)
 
     # 所有安全雷达的控制口都接到了这四个口
     def set_radar_mode(self, radar_mode):
