@@ -444,7 +444,9 @@ def agv_control_thread():
                     # Tray identification
                     tray_path = tray_recognition.tray_identification(x, y, phi, tof_camera_data.rcv_tof)
                     # print("tray_path", tray_path)
-                    if tray_path != None:
+                    if tray_recognition.tray_spot_switch:
+                        parsePath = ""
+                    if tray_path is not None:
                         parsePath = tray_path
 
                     send_data = format(x, ".4f") + "," + format(y, ".4f") + "," + format(phi, ".4f") + "," + format(Rcv_speed, ".4f") + "," + format(Rcv_angle, ".4f") + "," + parsePath  # + "," + "1.0,0.02,1.0"
@@ -986,6 +988,7 @@ def recv_can_thread():
 
             # TOF 报文
             elif can_msg_id == 0x185:
+                tof_camera_data.time_tof_rcv = time.time()
                 print("TIME:", time.time(), "TOF -->0x185: [{}]".format(bytearray_to_hex(can_msg_data)))
                 tof_camera_data.rcv_tof[0] = calculation_speed(can_msg_data[1] << 8 | can_msg_data[0])
                 tof_camera_data.rcv_tof[1] = calculation_speed(can_msg_data[3] << 8 | can_msg_data[2])

@@ -1,5 +1,6 @@
 import copy
 import math
+import time
 from can_bus import can0
 
 
@@ -10,12 +11,20 @@ class TofCamera():
         self.tof_enable = 10
         self.tof_height = 0.315
         self.h_offset = 0.23  # 高度补偿
+        self.time_tof_rcv = 0
+        self.tof_state = False
 
     def send_to_tof(self, ):
         self.tof_enable -= 1
         if self.tof_enable < 0:
-            # print('TOF Camera --> not connected')
+            print('TOF Camera --> not connected')
+            self.tof_state = False
             return
+        elif time.time() - self.time_tof_rcv > 3:
+            print('TOF Camera --> no data', self.time_tof_rcv)
+            self.tof_state = False
+        else:
+            self.tof_state = True
 
         data = copy.copy(self.send_tof)
         d_tof = [0, 0, 0, 0, 0, 0, 0, 0]
