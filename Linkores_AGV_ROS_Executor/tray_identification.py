@@ -1,10 +1,11 @@
 import copy
 import math
 import config
+import time
 
-first_flag = True
+
+first_flag = 30
 mpc_path = None
-
 
 # Tray identification
 class TrayIdentification:
@@ -15,18 +16,20 @@ class TrayIdentification:
         global first_flag, mpc_path
         beeline_set = 1 + 1.5
         config.adjust_distance = 0.7
-        print("endPosition----->", x,",",y,",",phi/math.pi*180)
-        if first_flag:
+        print("endPosition----->", x,",",y,",",phi/math.pi*180, first_flag)
+        first_flag -= 1
+        if first_flag == 0:
             x0 = x
             y0 = y
             # phi0 = phi/math.pi*180 +5
-            first_flag = False
-            tray_position = copy.copy(rcv_tof_dat)
+            tray_position_o = copy.copy(rcv_tof_dat)
+            tray_position = [tray_position_o[0]/1000, tray_position_o[1]/1000, tray_position_o[2]/100, 0]
             # tray_position = [11.4587 , 2.936 , -9.087, 0]
-            tray_position = [x0, y0, round(phi/math.pi*180, 4), 0]
+            # tray_position = [x0, y0, round(phi/math.pi*180, 4), 0]
             dx = tray_position[0] - x0
             dy = tray_position[1] - y0
             phi0 = tray_position[2]
+            # phi0 = tray_position[2] - 2*(phi/math.pi*180)
             beeline = - (math.sqrt(dx**2 + dy**2))
 
             x_initial = tray_position[0] + beeline_set * math.cos(phi0/180*math.pi)

@@ -431,7 +431,7 @@ def agv_control_thread():
             #MPC 控制
             adjustDistance = 0.1
             if float(adjustDistance) != 0:
-                t=time.time()
+                t = time.time()
                 if not mpc_tcp_init_ok:
 
                     speed = 0
@@ -462,7 +462,7 @@ def agv_control_thread():
                         try:
                             recv_data= recv_data.split(',')
                             for i in range(len(recv_data)):
-                                recv_data[i]=float(recv_data[i])
+                                recv_data[i] = float(recv_data[i])
 
                             mpc_speed = recv_data[0]
                             mpc_wheel_angle = recv_data[1]
@@ -472,7 +472,7 @@ def agv_control_thread():
 
                             screen_ctrl.screenmsg_infopage_od["MPC_info:"] = ("{:.0f}#{:.0f}#{}".format(recv_data[5], recv_data[2], mpc_speed))
                             if int(recv_data[5]) == 101:
-                                print("*********************************************************************************************************************************************")
+                                print("**************************************************************************完成*****************************************************************")
                                 print("*********************************************************************************************************************************************")
                                 mpc_speed = 0
                                 scheduler_protocol.adjustDistance = 0
