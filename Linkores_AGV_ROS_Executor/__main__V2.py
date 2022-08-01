@@ -230,6 +230,7 @@ def agv_control_thread():
     rotate_finish_pre = False
     last_mpc_time = 0
     #scheduler_protocol.targetForkHeight=0.08
+    adjustDistance = 0.1
 
     remain_path_len, total_path_len, lateral_drift, phi_drift, r, forwardOrBackward = 0, 0, 0, 0, 0, False
 
@@ -290,7 +291,7 @@ def agv_control_thread():
                 screen_ctrl.screenmsg_taskcont_od["服务器消息"] = ""
 
             # 舵轮控制量
-            adjustDistance, parsePath = scheduler_protocol.get_parsePath()
+            # adjustDistance, parsePath = scheduler_protocol.get_parsePath()  # todo:测试时关闭
             speed = 0
             wheel_angle = 0
             current_point = calc.Ponit(x, y, phi) #当前位置
@@ -429,7 +430,6 @@ def agv_control_thread():
                 logger.info("求解控制量：{}，{}".format(speed, wheel_angle))
 
             #MPC 控制
-            adjustDistance = 0.1
             if float(adjustDistance) != 0:
                 t = time.time()
                 if not mpc_tcp_init_ok:
@@ -446,8 +446,10 @@ def agv_control_thread():
                     # print("tray_path", tray_path)
                     if tray_recognition.tray_spot_switch:
                         parsePath = ""
-                    if tray_path is not None:
-                        parsePath = tray_path
+                        if tray_path is not None:
+                            parsePath = tray_path
+                    elif tray_recognition.tray_path_r is not None:
+                        parsePath = tray_recognition.tray_path_r
 
                     send_data = format(x, ".4f") + "," + format(y, ".4f") + "," + format(phi, ".4f") + "," + format(Rcv_speed, ".4f") + "," + format(Rcv_angle, ".4f") + "," + parsePath  # + "," + "1.0,0.02,1.0"
                     # 接收服务器发送的数据
@@ -475,6 +477,14 @@ def agv_control_thread():
                             screen_ctrl.screenmsg_infopage_od["MPC_info:"] = ("{:.0f}#{:.0f}#{}".format(recv_data[5], recv_data[2], mpc_speed))
                             if int(recv_data[5]) == 101:
                                 print("**************************************************************************完成*****************************************************************")
+                                if int(recv_data[2]) == 777:
+                                    tray_recognition.tray_spot_switch = False
+                                    tray_recognition.tray_path_r = "100," + format(x, ".4f") + "," + format(y, ".4f") + "," + format(phi/math.pi*180, ".1f") + "," + format(1.5, ".4f")  +  ",0.0, 0.0, 0.2, 999, 9, 9,0"
+                                elif int(recv_data[2]) == 999:
+                                    tray_recognition.tray_path_r = ""
+                                    adjustDistance = 0
+                                # else:
+                                #     parsePath = None
                                 print("*********************************************************************************************************************************************")
                                 mpc_speed = 0
                                 scheduler_protocol.adjustDistance = 0

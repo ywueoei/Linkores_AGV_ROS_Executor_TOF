@@ -11,6 +11,7 @@ mpc_path = None
 class TrayIdentification:
     def __init__(self):
         self.tray_spot_switch = True
+        self.tray_path_r = None
 
 
     def tray_identification(self, x, y, phi, rcv_tof_dat):
@@ -37,7 +38,7 @@ class TrayIdentification:
             print("startPosition----->", x_initial, ",", y_initial, ",", phi0, tray_position)
 
             if abs(beeline_set) > 0.001 and tof_camera_data.tof_state:
-                mpc_path = "100," + format(x_initial, ".4f") + "," + format(y_initial, ".4f") + "," + format(phi0, ".4f") + "," + format(-(beeline_set-1.5), ".4f") +  ",0.0, 0.0, 0.2, 6666, 6, 6, -2.1,0.0, 0.0, 0.2, 7777, 7, 7," + format(config.adjust_distance, ".4f")
+                mpc_path = "100," + format(x_initial, ".4f") + "," + format(y_initial, ".4f") + "," + format(phi0, ".4f") + "," + format(-(beeline_set-1.5), ".4f") +  ",0.0, 0.0, 0.2, 666, 6, 6, -2.1,0.0, 0.0, 0.2, 777, 7, 7," + format(config.adjust_distance, ".4f")
             else:
                 # logger.info("Tray position is error")
                 # print("Tray position is error")
