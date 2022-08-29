@@ -8,6 +8,7 @@ class TofCamera():
     def __init__(self):
         self.rcv_tof = [0, 0, 0, 0]  # [x, y, phi, height]
         self.send_tof = [0, 0, 0, 0]
+        self.rcv_identify_h = 0  # 识别高度
         self.tof_enable = 10
         self.tof_height = 0.315
         self.h_offset = 0.23  # 高度补偿
@@ -41,9 +42,10 @@ class TofCamera():
         d_tof[6] = h & 255
         d_tof[7] = (h & 65280) >> 8
         can0.send(0x205, d_tof, False)
+        self.rcv_identify_h = h + self.rcv_tof[3]
         print('send tof: {}, X:{}, Y:{}, PHI:{}, H:{}'.format(d_tof, x, y, phi, h))
         print('rcv tof: {}, ---> x:{}, y:{}, phi:{}, h:{}'.format(self.rcv_tof, self.rcv_tof[0], self.rcv_tof[1], self.rcv_tof[2], self.rcv_tof[3]))
-        print('差值: ---> dx:{}, dy:{}, dphi:{}, dh:{}'.format(x - self.rcv_tof[0], y - self.rcv_tof[1], phi - self.rcv_tof[2], h - self.rcv_tof[3]))
+        print('差值: ---> dx:{}, dy:{}, dphi:{}, dh:{}'.format(x - self.rcv_tof[0], y - self.rcv_tof[1], phi - self.rcv_tof[2], self.rcv_identify_h))
 
 
 tof_camera_data = TofCamera()

@@ -913,6 +913,10 @@ def recv_can_thread():
                 can_msg_data = can_msg.data
             except:
                 logger.error("can error")
+                os.system('sudo ip link set can0 down')
+                time.sleep(0.5)
+                os.system('sudo ip link set can0 up type can bitrate 250000')  # 重启can通信
+                time.sleep(0.5)
                 continue
 
             if can_msg_id == 0x1A6:
