@@ -477,10 +477,10 @@ def agv_control_thread():
                             screen_ctrl.screenmsg_infopage_od["MPC_info:"] = ("{:.0f}#{:.0f}#{}".format(recv_data[5], recv_data[2], mpc_speed))
                             if int(recv_data[5]) == 101:
                                 print("**************************************************************************完成*****************************************************************")
-                                if int(recv_data[2]) == 777:
+                                if abs(int(recv_data[2])) == 777:
                                     tray_recognition.tray_spot_switch = False
                                     tray_recognition.tray_path_r = "100," + format(x, ".4f") + "," + format(y, ".4f") + "," + format(phi/math.pi*180, ".1f") + "," + format(1.5, ".4f")  +  ",0.0, 0.0, 0.2, 999, 9, 9,0"
-                                elif int(recv_data[2]) == 999:
+                                elif abs(int(recv_data[2])) == 999:
                                     tray_recognition.tray_path_r = ""
                                     adjustDistance = 0
                                 # else:

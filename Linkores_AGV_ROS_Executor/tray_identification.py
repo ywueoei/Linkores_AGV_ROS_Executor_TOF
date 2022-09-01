@@ -16,7 +16,7 @@ class TrayIdentification:
 
     def tray_identification(self, x, y, phi, rcv_tof_dat):
         global first_flag, mpc_path
-        beeline_set = 1 + 1.5
+        beeline_set = 1.2 #+ 1.5
         config.adjust_distance = 0.7
         print("endPosition----->", x,",",y,",",phi/math.pi*180,first_flag)
         first_flag -= 1
@@ -38,8 +38,8 @@ class TrayIdentification:
             print("startPosition----->", x_initial, ",", y_initial, ",", phi0, tray_position)
 
             if abs(beeline_set) > 0.001 and tof_camera_data.tof_state:
-                mpc_path = "100," + format(x_initial, ".4f") + "," + format(y_initial, ".4f") + "," + format(phi0, ".4f") + "," + format(-(beeline_set-1.5), ".4f") +  ",0.0, 0.0, 0.2, 666, 6, 6, -2.1,0.0, 0.0, 0.2, 777, 7, 7," + format(config.adjust_distance, ".4f")
-                scheduler_protocol.targetForkHeight = tof_camera_data.rcv_identify_h
+                mpc_path = "100," + format(x_initial, ".4f") + "," + format(y_initial, ".4f") + "," + format(phi0, ".4f") + "," + format(-(beeline_set-0.7), ".4f") +  ",0.0, 0.0, 0.2, 666, 6, 6, -1.3,0.0, 0.0, 0.2, 777, 7, 7," + format(config.adjust_distance, ".4f")
+                # scheduler_protocol.targetForkHeight = tof_camera_data.rcv_identify_h/1000
             else:
                 # logger.info("Tray position is error")
                 # print("Tray position is error")
