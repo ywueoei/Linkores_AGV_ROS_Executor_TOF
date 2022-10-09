@@ -21,7 +21,7 @@ class TofCamera():
             print('TOF Camera --> not connected')
             self.tof_state = False
             return
-        elif time.time() - self.time_tof_rcv > 3:
+        elif time.time() - self.time_tof_rcv > 5:
             print('TOF Camera --> no data', self.time_tof_rcv)
             self.tof_state = False
         else:

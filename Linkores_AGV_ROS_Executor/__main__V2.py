@@ -237,6 +237,20 @@ def agv_control_thread():
     this_thread_name = "agv_control_thread"
     t_check.add_thread(this_thread_name)
     os.system("echo '' > lidar.log")
+    # 测试路径
+    from scheduler_connect import Point, scheduler_protocol
+    phi = -135 / 180 * math.pi
+    point0 = {"sequenceId": 15130, "stamp": 0, "dotId": 235081, "x": 15.5, "y": 0, "angle":  phi, "speed": 0.2}
+    point1 = {"sequenceId": 15131, "stamp": 1, "dotId": 235082, "x": 16.0, "y": 0.5, "angle": phi, "speed": 0.2}
+    # point2 = {"sequenceId": 15132, "stamp": 2, "dotId": 235083, "x": 16.5, "y": 1.5, "angle": phi,"speed": 0.2}
+    points = [point0, point1]
+    for point in points:
+        p = Point(point.get('x'), point.get('y'), point.get('angle'), 1111, point.get('stamp'),
+                  point.get('dotId'), point.get('nodeNum'), point.get('dotNum'), point.get('speed'))
+        scheduler_protocol.current_point_obj_list.append(p)
+    # print(scheduler_protocol.current_point_obj_list[0])
+
+
     while True:
         try:
             this_time = time.time()

@@ -4,7 +4,7 @@ import config
 import time
 from tof_camera import tof_camera_data
 from scheduler_connect import scheduler_protocol
-first_flag = 30
+first_flag = 60
 mpc_path = None
 
 
@@ -14,7 +14,7 @@ class TrayIdentification:
         self.tray_spot_switch = True
         self.tray_path_r = None
 
-    def tray_identification(self, x, y, phi, rcv_tof_dat):
+    def tray_identification(self, x, y, phi, rcv_tof_dat) -> str:
         global first_flag, mpc_path
         beeline_set = 1.2 #+ 1.5
         config.adjust_distance = 0.7
