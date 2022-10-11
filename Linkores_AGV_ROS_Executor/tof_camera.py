@@ -7,6 +7,7 @@ from can_bus import can0
 class TofCamera():
     def __init__(self):
         self.rcv_tof = [0, 0, 0, 0]  # [x, y, phi, height]
+        self.rcv_tof_relative = [0, 0, 0, 0]  # [x, y, phi, height]
         self.send_tof = [0, 0, 0, 0]
         self.rcv_identify_h = 0  # 识别高度
         self.tof_enable = 10
@@ -45,6 +46,7 @@ class TofCamera():
         self.rcv_identify_h = h + self.rcv_tof[3]
         print('send tof: {}, X:{}, Y:{}, PHI:{}, H:{}'.format(d_tof, x, y, phi, h))
         print('rcv tof: {}, ---> x:{}, y:{}, phi:{}, h:{}'.format(self.rcv_tof, self.rcv_tof[0], self.rcv_tof[1], self.rcv_tof[2], self.rcv_tof[3]))
+        print('rcv tof相对原始偏差: {}, ---> x:{}, y:{}, phi:{}, h:{}'.format(self.rcv_tof_relative, self.rcv_tof_relative[0], self.rcv_tof_relative[1], self.rcv_tof_relative[2], self.rcv_tof_relative[3]))
         print('差值: ---> dx:{}, dy:{}, dphi:{}, dh:{}'.format(x - self.rcv_tof[0], y - self.rcv_tof[1], phi - self.rcv_tof[2], self.rcv_identify_h))
 
 

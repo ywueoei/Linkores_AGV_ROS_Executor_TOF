@@ -47,6 +47,7 @@ filters = [{"can_id": 0x226, "can_mask": 0x226, "extended": False},
            {"can_id": 0x1807EFF3, "can_mask": 0x1807EFF3, "extended": True},
            {"can_id": 0x205, "can_mask": 0x205, "extended": False},
            {"can_id": 0x185, "can_mask": 0x185, "extended": False},
+           {"can_id": 0x285, "can_mask": 0x285, "extended": False},
            {"can_id": 0x705, "can_mask": 0x705, "extended": False},
            ]
 # # A filter matches, when <received_can_id> & can_mask == can_id & can_mask.

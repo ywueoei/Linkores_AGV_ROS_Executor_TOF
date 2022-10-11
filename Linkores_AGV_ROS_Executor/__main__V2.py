@@ -14,7 +14,8 @@ import AudioPlayer
 import global_var
 from can_bus import can0
 from log import logger
-from locator import locator_protocol
+# from locator import locator_protocol
+from locator_client import locator_protocol
 from scheduler_connect import scheduler_protocol
 from AD_Client import ad_client
 import action_calculation as calc
@@ -25,6 +26,7 @@ from thread_check import t_check
 import ps2_handle
 from tof_camera import tof_camera_data
 from tray_identification import tray_recognition
+
 
 def get_ip_list():
     ip_str = os.popen("hostname -I").read()
@@ -230,7 +232,7 @@ def agv_control_thread():
     rotate_finish_pre = False
     last_mpc_time = 0
     #scheduler_protocol.targetForkHeight=0.08
-    adjustDistance = 0.1
+    adjustDistance = 0
 
     remain_path_len, total_path_len, lateral_drift, phi_drift, r, forwardOrBackward = 0, 0, 0, 0, 0, False
 
@@ -256,6 +258,8 @@ def agv_control_thread():
             this_time = time.time()
             # t_check.thread_update(this_thread_name)
             # 获取坐标
+            # if locator_protocol.state:
+            locator_protocol.state = locator_protocol.connection_state
             if locator_protocol.state:
                 coordinate_current = locator_protocol.getValue()
                 [x, y, phi] = [int(coordinate_current[0] * 10000) / 10000, int(coordinate_current[1] * 10000) / 10000, int(coordinate_current[2] * 10000) / 10000]
@@ -1023,6 +1027,13 @@ def recv_can_thread():
                 tof_camera_data.rcv_tof[2] = calculation_speed(can_msg_data[5] << 8 | can_msg_data[4])
                 tof_camera_data.rcv_tof[3] = calculation_speed(can_msg_data[7] << 8 | can_msg_data[6])
 
+            elif can_msg_id == 0x285:
+                print("TIME:", time.time(), "TOF -->0x285: [{}]".format(bytearray_to_hex(can_msg_data)))
+                tof_camera_data.rcv_tof_relative[0] = calculation_speed(can_msg_data[1] << 8 | can_msg_data[0])
+                tof_camera_data.rcv_tof_relative[1] = calculation_speed(can_msg_data[3] << 8 | can_msg_data[2])
+                tof_camera_data.rcv_tof_relative[2] = calculation_speed(can_msg_data[5] << 8 | can_msg_data[4])
+                tof_camera_data.rcv_tof_relative[3] = calculation_speed(can_msg_data[7] << 8 | can_msg_data[6])
+
 
             elif can_msg_id == 0x705:
                 tof_camera_data.tof_enable = 200
@@ -1542,7 +1553,7 @@ t7.start()
 t8.start()
 
 
-from radar_log import radar_client  # 导入雷达日志模块
+# from radar_log import radar_client  # 导入雷达日志模块
 # from udp_radar import agv_logs  # 导入雷达日志模块 new
 while True:
     if IO_controller.get_shutdown():
