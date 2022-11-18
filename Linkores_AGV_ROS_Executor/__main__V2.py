@@ -232,7 +232,7 @@ def agv_control_thread():
     rotate_finish_pre = False
     last_mpc_time = 0
     #scheduler_protocol.targetForkHeight=0.08
-    adjustDistance = 0
+    adjustDistance = 0.7
 
     remain_path_len, total_path_len, lateral_drift, phi_drift, r, forwardOrBackward = 0, 0, 0, 0, 0, False
 
@@ -249,7 +249,7 @@ def agv_control_thread():
     for point in points:
         p = Point(point.get('x'), point.get('y'), point.get('angle'), 1111, point.get('stamp'),
                   point.get('dotId'), point.get('nodeNum'), point.get('dotNum'), point.get('speed'))
-        scheduler_protocol.current_point_obj_list.append(p)
+        # scheduler_protocol.current_point_obj_list.append(p)
     # print(scheduler_protocol.current_point_obj_list[0])
 
 
@@ -313,6 +313,8 @@ def agv_control_thread():
             speed = 0
             wheel_angle = 0
             current_point = calc.Ponit(x, y, phi) #当前位置
+            tof_camera_data.car_speed = Rcv_speed
+
             if point_two != None:
                 if straight_or_turn(point_one, point_two):  # p1, p2 为直线
                     #
@@ -719,8 +721,8 @@ def agv_control_thread():
                 math.fabs(math.tan(phi_drift - math.pi)) > (math.tan(50 / 180 * math.pi))) or
                 wheel_drift > 66) and \
                 scheduler_protocol.rotate_statue is False:
-                out_of_control_flag = True
-                speed = 0
+                # out_of_control_flag = True
+                # speed = 0
                 logger.warning("车辆偏差过大，speed = 0，横向偏差：{}，车身角度偏差：{}度，舵轮角度偏差：{}，".format(lateral_drift, phi_drift * 180 / math.pi, wheel_drift))
             else:
                 out_of_control_flag = False

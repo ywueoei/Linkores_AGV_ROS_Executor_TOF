@@ -1,11 +1,11 @@
-cfg_car_Num: 'CDD10-4' #车辆名称
+cfg_car_Num: 'CDD10-SHZH' #车辆名称
 # 地图ID
-cfg_Map_ID: 2
-locator_ip: "192.168.137.104"  #雷达ip
-scheduler_ip: "192.168.1.185"  #服务器ip
-ad_modular_ip: "192.168.137.204"   #AD模块ip
-fork_height_list: [0.08, 0.132, 0.256, 0.388, 0.699, 1.367]  #货叉高度和AD模块的对应值
-fork_ad_list: [292, 459, 893, 1391, 2628, 5306]
+cfg_Map_ID: 1
+locator_ip: "192.168.137.107"  #雷达ip
+scheduler_ip: "192.168.2.79"  #服务器ip
+ad_modular_ip: "192.168.137.250"   #AD模块ip
+fork_height_list: [0.08, 0.115,0.727, 1.217]  #货叉高度和AD模块的对应值
+fork_ad_list: [357, 446, 2780, 4741]
 # 光电开关启用
 laser_switch: True
 # 避障雷达启用
@@ -13,10 +13,10 @@ radar_switch: False
 # 雷达数量
 radar_num: 2
 # 货物检测开关
-fork_switch: False
+fork_switch: 0
 
 # 以下参数非必要请勿修改
-cfg_nav350_edgeoffset: {front:1.80, behind: 0.95, left: 0.96,right: 0.96}
+cfg_nav350_edgeoffset: {front: 1.2, behind: 0.5, left: 0.5, right: 0.5}
 cfg_nav350_goodoffset: 1.013   #雷达与从动轮的距离
 wheelBase: 0.973 #轴距
 wheel_angle_drift: -0.00 # 舵轮偏移，弧度制

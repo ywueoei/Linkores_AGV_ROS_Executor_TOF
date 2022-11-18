@@ -12,9 +12,10 @@ class TofCamera():
         self.rcv_identify_h = 0  # 识别高度
         self.tof_enable = 10
         self.tof_height = 0.315
-        self.h_offset = 0.23  # 高度补偿
+        self.h_offset = 0.20  # 高度补偿
         self.time_tof_rcv = 0
         self.tof_state = False
+        self.car_speed = 1
 
     def send_to_tof(self, ):
         self.tof_enable -= 1
@@ -22,7 +23,7 @@ class TofCamera():
             print('TOF Camera --> not connected')
             self.tof_state = False
             return
-        elif time.time() - self.time_tof_rcv > 5:
+        elif time.time() - self.time_tof_rcv > 15:
             print('TOF Camera --> no data', self.time_tof_rcv)
             self.tof_state = False
         else:
@@ -42,10 +43,12 @@ class TofCamera():
         d_tof[5] = (phi & 65280) >> 8
         d_tof[6] = h & 255
         d_tof[7] = (h & 65280) >> 8
+        if abs(self.car_speed) > 0.03:
+            return
         can0.send(0x205, d_tof, False)
         self.rcv_identify_h = h + self.rcv_tof[3]
         print('send tof: {}, X:{}, Y:{}, PHI:{}, H:{}'.format(d_tof, x, y, phi, h))
-        print('rcv tof: {}, ---> x:{}, y:{}, phi:{}, h:{}'.format(self.rcv_tof, self.rcv_tof[0], self.rcv_tof[1], self.rcv_tof[2], self.rcv_tof[3]))
+        print('rcv tof: {}, ---> x:{}, y:{}, phi:{}, h:{} dL:{}' .format(self.rcv_tof, self.rcv_tof[0], self.rcv_tof[1], self.rcv_tof[2], self.rcv_tof[3], self.rcv_tof_relative[1]))
         print('rcv tof相对原始偏差: {}, ---> x:{}, y:{}, phi:{}, h:{}'.format(self.rcv_tof_relative, self.rcv_tof_relative[0], self.rcv_tof_relative[1], self.rcv_tof_relative[2], self.rcv_tof_relative[3]))
         print('差值: ---> dx:{}, dy:{}, dphi:{}, dh:{}'.format(x - self.rcv_tof[0], y - self.rcv_tof[1], phi - self.rcv_tof[2], self.rcv_identify_h))
 

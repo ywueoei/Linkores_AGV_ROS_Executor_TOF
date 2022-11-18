@@ -97,9 +97,10 @@ class Scheduler_Connect(asyncio.Protocol):
         data = pdata.get("data")
         if message == "ARRIVE":
             return
-
+        if message != "HEARTBEAT":
+            print("服务器消息: {}".format(pdata))
         logger.info("服务器消息: {}".format(pdata))
-        print("服务器消息: {}".format(pdata))
+
         if message == "HEARTBEAT":
             if self.heart_beat < 9:
                 self.heart_beat += 1

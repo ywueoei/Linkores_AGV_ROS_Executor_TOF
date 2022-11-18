@@ -35,10 +35,11 @@ class LocaorClient(EchoClientProtocol):
         self.data_buffer = b''
         self.error_count = 0
         self.normal_count = 0
-        self.offset = [0, 0, 0]
+        self.offset = [0.7927, 0, 0]
         self.cfg_radar_org_offset = 0
         # self.offset = config.locator_offset # 0.91
-        self.tof_offset = [-0.49, 0, 0]  # config.tof_camera_offset
+        self.tof_offset = [0.32, -0.019, 0]  # config.tof_camera_offset
+        # self.tof_offset = [0, 0, 0]  # config.tof_camera_offset
         self.__value = [0] * 4
         self.judgment = 0
         self.state = False  # 兼容旧
@@ -83,7 +84,8 @@ class LocaorClient(EchoClientProtocol):
                         tof_camera_data.send_to_tof()
 
                         self.set_value([values[0], values[1], phi, self.judgment])
-                        # print("x: {}, y: {}, angle: {}".format(x, y, angle))
+                        print("x0: {}, y0: {}, angle: {}".format(x, y, angle))
+                        print("x: {}, y: {}, angle: {}".format(values[0], values[1], math.degrees(phi)))
                     except:
                         print(traceback.format_exc())
                         self.data_buffer = b''

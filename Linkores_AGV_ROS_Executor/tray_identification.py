@@ -4,7 +4,7 @@ import config
 import time
 from tof_camera import tof_camera_data
 from scheduler_connect import scheduler_protocol
-first_flag = 60
+first_flag = 180
 mpc_path = None
 
 
@@ -38,7 +38,7 @@ class TrayIdentification:
             print("startPosition----->", x_initial, ",", y_initial, ",", phi0, tray_position)
 
             if abs(beeline_set) > 0.001 and tof_camera_data.tof_state:
-                mpc_path = "100," + format(x_initial, ".4f") + "," + format(y_initial, ".4f") + "," + format(phi0, ".4f") + "," + format(-(beeline_set-0.7), ".4f") +  ",0.0, 0.0, 0.2, 666, 6, 6, -1.3,0.0, 0.0, 0.2, 777, 7, 7," + format(config.adjust_distance, ".4f")
+                mpc_path = "100," + format(x_initial, ".4f") + "," + format(y_initial, ".4f") + "," + format(phi0, ".4f") + "," + format(-(beeline_set-0.7), ".4f") +  ",0.0, 0.0, 0.2, 666, 6, 6, -1.27,0.0, 0.0, 0.2, 777, 7, 7," + format(config.adjust_distance, ".4f")
                 # scheduler_protocol.targetForkHeight = tof_camera_data.rcv_identify_h/1000
             else:
                 # logger.info("Tray position is error")
