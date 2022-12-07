@@ -98,12 +98,6 @@ class LocaorClient(EchoClientProtocol):
     def setValue(self, value):
         self.set_value(value)
 
-    def getValue(self):
-        return self.get_value()
-
-    def setValue(self, value):
-        self.set_value(value)
-
     def set_value(self, value):
         self.__lock.acquire()
         self.__value = value.copy()
